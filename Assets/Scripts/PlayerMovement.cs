@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
@@ -18,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        UpdateLives();
     }
 
     // Update is called once per frame
@@ -32,9 +33,54 @@ public class PlayerMovement : MonoBehaviour
         {
             jump = true;
             animator.SetBool("isJumping", true);
-        }
+        }        
+    }
 
-        if(health > numOfHearts)
+    public void onLand()
+    {
+        animator.SetBool("isJumping", false);
+    }
+    void FixedUpdate()
+    {
+        controller.Move(horizontalMove * Time.fixedDeltaTime, false, jump);
+        jump = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        
+        if (other.gameObject.CompareTag("Spikes"))
+        {
+            Debug.Log("You Dies");
+            if (CheckRetries())
+            {
+                health-=1;
+                UpdateLives();
+            }
+            else
+            {
+                Debug.Log("No health");
+                UpdateLives();
+                Invoke("RestartGame", 3);
+            }
+            
+        }
+        
+    }
+    bool CheckRetries()
+    {
+        if (health > 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    void UpdateLives()
+    {
+        if (health > numOfHearts)
         {
             health = numOfHearts;
         }
@@ -59,16 +105,11 @@ public class PlayerMovement : MonoBehaviour
                 hearts[i].enabled = false;
             }
         }
-        
+    }
+    void RestartGame()
+    {
+        SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
     }
 
-    public void onLand()
-    {
-        animator.SetBool("isJumping", false);
-    }
-    void FixedUpdate()
-    {
-        controller.Move(horizontalMove * Time.fixedDeltaTime, false, jump);
-        jump = false;
-    }
 }
+
