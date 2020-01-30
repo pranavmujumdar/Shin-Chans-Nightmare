@@ -5,7 +5,7 @@ using UnityEngine;
 public class NiniPatrolling : MonoBehaviour
 {
 
-    public float speed;
+    private float speed = 2f;
 
     private bool movingRight = true;
 
