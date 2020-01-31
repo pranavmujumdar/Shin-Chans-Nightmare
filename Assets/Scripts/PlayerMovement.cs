@@ -22,11 +22,18 @@ public class PlayerMovement : MonoBehaviour
     public Sprite fullHeart;
     public Sprite emptyHeart;
 
+    public int collectibles;
+    public int numOfKamen;
+    public Image[] kamens;
+    public Sprite blueKamen;
+    public Sprite grayKamen;
+
     private GameMaster gm;
     // Start is called before the first frame update
     void Start()
     {
         UpdateLives();
+        UpdateKamen();
         currentTime = levelTime;
         gm = GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>();
         gm.lastCheckpointPos = transform.position;
@@ -95,6 +102,12 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Checkpoint"))
         {
             gm.lastCheckpointPos = transform.position;
+        }
+        if (collision.gameObject.CompareTag("Kamen"))
+        {
+            collectibles -= 1;
+            UpdateKamen();
+            collision.gameObject.SetActive(false);
         }
     }
     private void OnCollisionEnter2D(Collision2D other)
@@ -174,6 +187,32 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 hearts[i].enabled = false;
+            }
+        }
+    }
+    void UpdateKamen()
+    {
+        if(collectibles > numOfKamen)
+        {
+            collectibles = numOfHearts;
+        }
+        for (int i = 0; i < kamens.Length; i++)
+        {
+            if (i < collectibles)
+            {
+                kamens[i].sprite = grayKamen;
+            }
+            else
+            {
+                kamens[i].sprite = blueKamen;
+            }
+            if (i< numOfKamen)
+            {
+                kamens[i].enabled = true;
+            }
+            else
+            {
+                kamens[i].enabled = false;
             }
         }
     }

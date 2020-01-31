@@ -9,6 +9,7 @@ TagManager:
   - Nini
   - GM
   - Checkpoint
+  - Kamen
   layers:
   - Default
   - TransparentFX
