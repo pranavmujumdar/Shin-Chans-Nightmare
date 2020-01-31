@@ -21,12 +21,15 @@ public class PlayerMovement : MonoBehaviour
     public Image[] hearts;
     public Sprite fullHeart;
     public Sprite emptyHeart;
+
+    private GameMaster gm;
     // Start is called before the first frame update
     void Start()
     {
         UpdateLives();
         currentTime = levelTime;
-
+        gm = GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>();
+        gm.lastCheckpointPos = transform.position;
     }
 
     // Update is called once per frame
@@ -82,13 +85,16 @@ public class PlayerMovement : MonoBehaviour
             UpdateLives();
             if (CheckRetries())
             {
-                transform.position = new Vector3(-9.94f, -1.57f, 0);
+                transform.position = gm.lastCheckpointPos;
             }
             else
             {
                 transform.position = new Vector3(-9.94f, -1.57f, 0);
             }
-            
+        }
+        if (collision.gameObject.CompareTag("Checkpoint"))
+        {
+            gm.lastCheckpointPos = transform.position;
         }
     }
     private void OnCollisionEnter2D(Collision2D other)
@@ -101,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
             UpdateLives();
             if (CheckRetries())
             {
-                transform.position = new Vector3(-9.94f, -1.57f, 0);
+                transform.position = gm.lastCheckpointPos;
             }
             else
             {

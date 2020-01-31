@@ -7,6 +7,8 @@ TagManager:
   - Spikes
   - Pit
   - Nini
+  - GM
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
