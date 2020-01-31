@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     private float currentTime = 0f;
     public float levelTime = 15f;
 
+    public Text instructionText;
+
     public int health;
     public int numOfHearts;
     public Image[] hearts;
@@ -29,6 +31,9 @@ public class PlayerMovement : MonoBehaviour
     public Sprite grayKamen;
 
     private GameMaster gm;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,11 +42,15 @@ public class PlayerMovement : MonoBehaviour
         currentTime = levelTime;
         gm = GameObject.FindGameObjectWithTag("GM").GetComponent<GameMaster>();
         gm.lastCheckpointPos = transform.position;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        Invoke("setInstructionText", 0);
+       
+        
         horizontalMove = Input.GetAxisRaw("Horizontal") * speed;
 
         animator.SetFloat("Speed", Mathf.Abs(horizontalMove));
@@ -54,6 +63,11 @@ public class PlayerMovement : MonoBehaviour
 
         currentTime -= 1 * Time.deltaTime;
         Invoke("setTimerText",0.5f);
+        if (currentTime < 95.0f)
+        {
+            CancelInvoke("setInstructionText");
+            instructionText.text = "";
+        }
         if (CheckTimer())
         {
             Debug.Log("GameOver");
@@ -67,6 +81,10 @@ public class PlayerMovement : MonoBehaviour
             CancelInvoke("setTimerText");
             timerText.text = "Game Over!";
             Invoke("RestartGame", 3);
+        }
+        if(instructionText.text != "")
+        {
+            Invoke("setInstructionTextToEmpty", 5);
         }
     }
     void setTimerText()
@@ -108,8 +126,33 @@ public class PlayerMovement : MonoBehaviour
             collectibles -= 1;
             UpdateKamen();
             collision.gameObject.SetActive(false);
+            Debug.Log(collectibles);
+        }
+        if (collision.gameObject.CompareTag("Nini"))
+        {
+            if (collectibles == 0)
+            {
+                Debug.Log("You Win");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            }
+            else
+            {
+                Debug.Log("collect all first!");
+                Invoke("setTextForKamenCollection",1);
+//                instructionText.text = "collect all first";
+            }
         }
     }
+/*    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Nini"))
+        {
+            //Invoke("setInstructionTextToEmpty", 5);
+            instructionText.text = "";
+        }
+        
+    }
+*/
     private void OnCollisionEnter2D(Collision2D other)
     {
         
@@ -132,12 +175,31 @@ public class PlayerMovement : MonoBehaviour
             }
             
         }
+        /*
         if (other.gameObject.CompareTag("Nini"))
         {
-            Debug.Log("You Win");
+            if(collectibles == 0)
+            {
+                Debug.Log("You Win");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            }
+            else
+            {
+                Debug.Log("collect all first!");
+                //Invoke("setTextForKamenCollection",0.2f);
+            }
         }
-        
+        */
     }
+    /*
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Nini"))
+        {
+            Invoke("setInstructionTextToEmpty", 5);
+        }
+    }
+    */
 
     bool CheckTimer()
     {
@@ -220,6 +282,17 @@ public class PlayerMovement : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
-
+    void setInstructionText()
+    {
+        instructionText.text = "Collect all the action Kamen\n Give them to Nene \n Masao is a checkpoint";
+    }
+    void setTextForKamenCollection()
+    {
+        instructionText.text = "Collect all the action Kamen\n Give them to Nene";
+    }
+    void setInstructionTextToEmpty()
+    {
+        instructionText.text = "";
+    }
 }
 
