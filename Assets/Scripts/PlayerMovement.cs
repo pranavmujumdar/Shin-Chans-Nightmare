@@ -52,6 +52,12 @@ public class PlayerMovement : MonoBehaviour
             timerText.text = "Game Over!";
             Invoke("RestartGame", 3);
         }
+        if (!CheckRetries())
+        {
+            CancelInvoke("setTimerText");
+            timerText.text = "Game Over!";
+            Invoke("RestartGame", 3);
+        }
     }
     void setTimerText()
     {
@@ -74,7 +80,15 @@ public class PlayerMovement : MonoBehaviour
             health -= 1;
             // SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
             UpdateLives();
-            transform.position = new Vector3(-9.94f, -1.57f, 0);
+            if (CheckRetries())
+            {
+                transform.position = new Vector3(-9.94f, -1.57f, 0);
+            }
+            else
+            {
+                transform.position = new Vector3(-9.94f, -1.57f, 0);
+            }
+            
         }
     }
     private void OnCollisionEnter2D(Collision2D other)
@@ -83,15 +97,18 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.CompareTag("Spikes"))
         {
             Debug.Log("You Dies");
+            health -= 1;
+            UpdateLives();
             if (CheckRetries())
             {
-                health-=1;
-                UpdateLives();
+                transform.position = new Vector3(-9.94f, -1.57f, 0);
             }
             else
             {
                 Debug.Log("No health");
-                UpdateLives();
+                //UpdateLives();
+                CancelInvoke("setTimerText");
+                timerText.text = "Game Over!";
                 Invoke("RestartGame", 3);
             }
             
@@ -117,7 +134,7 @@ public class PlayerMovement : MonoBehaviour
     }
     bool CheckRetries()
     {
-        if (health > 1)
+        if (health >= 1)
         {
             return true;
         }
@@ -156,7 +173,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void RestartGame()
     {
-        SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 
 }
